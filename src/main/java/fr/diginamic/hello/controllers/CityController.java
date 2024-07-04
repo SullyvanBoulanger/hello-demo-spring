@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.diginamic.hello.entities.City;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/villes")
@@ -41,7 +43,15 @@ public class CityController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> postCity(@RequestBody City city) {
+    public ResponseEntity<?> postCity(@Valid @RequestBody City city, BindingResult result) {
+
+        // if(result.hasErrors()){
+        //     throw new Exception(result.getAllErrors().getFirst().getDefaultMessage());
+        // }
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body("La requête n'est pas respectée");
+        }
 
         if (cities.stream().anyMatch(listCity -> listCity.getId() == city.getId()))
             return ResponseEntity.badRequest().body("La ville existe déjà");
@@ -51,7 +61,11 @@ public class CityController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> putCityById(@PathVariable int id, @RequestBody City city) {
+    public ResponseEntity<?> putCityById(@PathVariable int id, @Valid @RequestBody City city, BindingResult result) {
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body("La requête n'est pas respectée");
+        }
 
         City cityToModify = cities.stream().filter(listCity -> listCity.getId() == id).findFirst().orElse(null);
 
