@@ -1,11 +1,12 @@
 package fr.diginamic.hello.controllers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,78 +16,61 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.diginamic.hello.dtos.CityDto;
 import fr.diginamic.hello.entities.City;
+import fr.diginamic.hello.services.CityService;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/villes")
 public class CityController {
-
-    List<City> cities = new ArrayList<>(Arrays.asList(
-            new City(0, "Nice", 343_000),
-            new City(1, "Carcassonne", 47_800),
-            new City(2, "Narbonne", 53_400),
-            new City(3, "Lyon", 484_000),
-            new City(4, "Foix", 9_700),
-            new City(5, "Pau", 77_200),
-            new City(6, "Marseille", 850_700),
-            new City(7, "Tarbes", 40_600)));
+    @Autowired
+    private CityService cityService;
 
     @GetMapping()
     public List<City> getCities() {
-        return cities;
+        return cityService.getCities();
     }
 
     @GetMapping("/{id}")
     public City getCityById(@PathVariable int id) {
-        return cities.stream().filter(city -> city.getId() == id).findFirst().orElse(null);
+        return cityService.getCityById(id);
     }
 
     @PostMapping()
-    public ResponseEntity<?> postCity(@Valid @RequestBody City city, BindingResult result) {
-
-        // if(result.hasErrors()){
-        //     throw new Exception(result.getAllErrors().getFirst().getDefaultMessage());
-        // }
+    public ResponseEntity<?> postCity(@Valid @RequestBody CityDto cityDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body("La requête n'est pas respectée");
+            return ResponseEntity.badRequest().body(result.getAllErrors().stream().map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.joining("\n")));
         }
 
-        if (cities.stream().anyMatch(listCity -> listCity.getId() == city.getId()))
-            return ResponseEntity.badRequest().body("La ville existe déjà");
-
-        cities.add(city);
-        return ResponseEntity.ok("Ville insérée avec succès");
+        return ResponseEntity.ok(cityService.insertCity(cityDto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> putCityById(@PathVariable int id, @Valid @RequestBody City city, BindingResult result) {
+    public ResponseEntity<?> putCityById(@PathVariable int id, @Valid @RequestBody CityDto cityDto,
+            BindingResult result) {
 
         if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body("La requête n'est pas respectée");
+            return ResponseEntity.badRequest().body(result.getAllErrors().stream().map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.joining("\n")));
         }
 
-        City cityToModify = cities.stream().filter(listCity -> listCity.getId() == id).findFirst().orElse(null);
-
-        if (cityToModify == null)
+        List<City> cities = cityService.modifyCity(id, cityDto);
+        if (cities == null)
             return ResponseEntity.badRequest().body("La ville n'existe pas");
 
-        cityToModify.setName(city.getName());
-        cityToModify.setNumberInhabitants(city.getNumberInhabitants());
-
-        return ResponseEntity.ok("Ville modifiée avec succès");
+        return ResponseEntity.ok(cities);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCity(@PathVariable int id) {
-        City cityToDelete = cities.stream().filter(listCity -> listCity.getId() == id).findFirst().orElse(null);
+        List<City> cities = cityService.deleteCity(id);
 
-        if (cityToDelete == null)
+        if (cities == null)
             return ResponseEntity.badRequest().body("La ville n'existe pas");
 
-        cities.remove(cityToDelete);
-
-        return ResponseEntity.ok("Ville supprimée avec succès");
+        return ResponseEntity.ok(cities);
     }
 }
