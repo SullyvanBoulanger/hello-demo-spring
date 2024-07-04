@@ -7,28 +7,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.diginamic.hello.dtos.CityDto;
 import fr.diginamic.hello.entities.City;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import fr.diginamic.hello.entities.Department;
 import jakarta.persistence.TypedQuery;
 
 @Repository
-public class CityDao {
-    @PersistenceContext
-    private EntityManager entityManager;
+public class CityDao extends SuperDao<City, CityDto> {
 
-    public List<City> findAll(){
+    public List<City> findAll() {
         TypedQuery<City> query = entityManager.createQuery("SELECT c FROM City c", City.class);
         return query.getResultList();
     }
 
-    public City findById(int id){
+    public City findById(int id) {
         return entityManager.find(City.class, id);
     }
 
-    public City findByName(String name){
+    public City findByName(String name) {
         TypedQuery<City> query = entityManager.createQuery("SELECT c FROM City c WHERE c.name LIKE :name", City.class);
         query.setParameter("name", name);
-        
+
         try {
             return query.getResultList().getFirst();
         } catch (Exception e) {
@@ -37,36 +34,50 @@ public class CityDao {
     }
 
     @Transactional
-    public void insertCity(CityDto cityDto){
+    public void insert(CityDto dto) {
         City entityCity = new City();
-        entityCity.setName(cityDto.getName());
-        entityCity.setNumberInhabitants(cityDto.getNumberInhabitants());
+        entityCity.setName(dto.getName());
+        entityCity.setNumberInhabitants(dto.getNumberInhabitants());
+        entityCity.setDepartment(entityManager.find(Department.class, dto.getDepartmentId()));
 
         entityManager.persist(entityCity);
     }
 
     @Transactional
-    public boolean updateCity(int id, CityDto cityDto){
+    public boolean update(int id, CityDto dto) {
         City city = findById(id);
 
-        if(city == null)
+        if (city == null)
             return false;
 
-        city.setName(cityDto.getName());
-        city.setNumberInhabitants(cityDto.getNumberInhabitants());
-        
+        city.setName(dto.getName());
+        city.setNumberInhabitants(dto.getNumberInhabitants());
+        city.setDepartment(entityManager.find(Department.class, dto.getDepartmentId()));
+
         return true;
     }
 
     @Transactional
-    public boolean deleteCity(int id){
+    public boolean delete(int id) {
         City city = findById(id);
 
-        if(city == null)
+        if (city == null)
             return false;
-        
+
         entityManager.remove(city);
-        
+
+        return true;
+    }
+
+    @Transactional
+    public boolean updateDepartment(int cityId, Department department) {
+        City city = findById(cityId);
+
+        if (city == null)
+            return false;
+
+        city.setDepartment(department);
+
         return true;
     }
 }

@@ -19,4 +19,6 @@ public class CityDto {
 
     @Min(1)
     private long numberInhabitants;
+
+    private int departmentId;
 }
