@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DepartmentDto {
+    private String code;
     private String name;
     private int[] citiesIds;
 }

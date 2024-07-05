@@ -11,14 +11,15 @@ import fr.diginamic.hello.entities.Department;
 import jakarta.persistence.TypedQuery;
 
 @Repository
-public class CityDao extends SuperDao<City, CityDto> {
+public class CityDao extends SuperDao<Integer, City, CityDto> {
 
     public List<City> findAll() {
         TypedQuery<City> query = entityManager.createQuery("SELECT c FROM City c", City.class);
         return query.getResultList();
     }
 
-    public City findById(int id) {
+    @Override
+    public City findById(Integer id) {
         return entityManager.find(City.class, id);
     }
 
@@ -33,6 +34,7 @@ public class CityDao extends SuperDao<City, CityDto> {
         }
     }
 
+    @Override
     @Transactional
     public void insert(CityDto dto) {
         City entityCity = new City();
@@ -43,8 +45,9 @@ public class CityDao extends SuperDao<City, CityDto> {
         entityManager.persist(entityCity);
     }
 
+    @Override
     @Transactional
-    public boolean update(int id, CityDto dto) {
+    public boolean update(Integer id, CityDto dto) {
         City city = findById(id);
 
         if (city == null)
@@ -57,8 +60,9 @@ public class CityDao extends SuperDao<City, CityDto> {
         return true;
     }
 
+    @Override
     @Transactional
-    public boolean delete(int id) {
+    public boolean delete(Integer id) {
         City city = findById(id);
 
         if (city == null)

@@ -8,7 +8,7 @@ import fr.diginamic.hello.dtos.CityDto;
 import fr.diginamic.hello.entities.City;
 
 @Service
-public class CityService extends SuperService<City, CityDto> {
+public class CityService extends SuperService<Integer, City, CityDto> {
     @Autowired
     private CityDao cityDao;
 

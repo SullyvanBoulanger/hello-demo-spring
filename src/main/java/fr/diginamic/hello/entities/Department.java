@@ -5,8 +5,6 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -21,12 +19,15 @@ import lombok.Setter;
 @Setter
 public class Department {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String code;
 
     private String name;
 
     @OneToMany(mappedBy = "department")
     @JsonIgnoreProperties("department")
     private Set<City> cities;
+
+    public void addCity(City city) {
+        cities.add(city);
+    }
 }

@@ -14,7 +14,7 @@ import fr.diginamic.hello.entities.Department;
 import jakarta.persistence.TypedQuery;
 
 @Repository
-public class DepartmentDao extends SuperDao<Department, DepartmentDto> {
+public class DepartmentDao extends SuperDao<String, Department, DepartmentDto> {
 
     @Autowired
     private CityDao cityDao;
@@ -26,8 +26,8 @@ public class DepartmentDao extends SuperDao<Department, DepartmentDto> {
     }
 
     @Override
-    public Department findById(int id) {
-        return entityManager.find(Department.class, id);
+    public Department findById(String code) {
+        return entityManager.find(Department.class, code);
     }
 
     public Department findByName(String name) {
@@ -46,6 +46,7 @@ public class DepartmentDao extends SuperDao<Department, DepartmentDto> {
     @Transactional
     public void insert(DepartmentDto departmentDto) {
         Department department = new Department();
+        department.setCode(departmentDto.getCode());
         department.setName(departmentDto.getName());
         bindCityToDepartment(department, departmentDto.getCitiesIds());
 
@@ -54,8 +55,8 @@ public class DepartmentDao extends SuperDao<Department, DepartmentDto> {
 
     @Override
     @Transactional
-    public boolean update(int id, DepartmentDto departmentDto) {
-        Department department = findById(id);
+    public boolean update(String code, DepartmentDto departmentDto) {
+        Department department = findById(code);
 
         if (department == null)
             return false;
@@ -68,8 +69,8 @@ public class DepartmentDao extends SuperDao<Department, DepartmentDto> {
 
     @Override
     @Transactional
-    public boolean delete(int id) {
-        Department department = findById(id);
+    public boolean delete(String code) {
+        Department department = findById(code);
 
         if (department == null)
             return false;
@@ -77,6 +78,27 @@ public class DepartmentDao extends SuperDao<Department, DepartmentDto> {
         entityManager.remove(department);
 
         return true;
+    }
+
+    public List<City> getBigCities(int id, int limit) {
+        TypedQuery<City> query = entityManager.createQuery(
+                "SELECT c FROM Department d JOIN d.cities c WHERE d.id = :id ORDER BY c.numberInhabitants DESC",
+                City.class);
+        query.setParameter("id", id);
+        query.setMaxResults(limit);
+
+        return query.getResultList();
+    }
+
+    public List<City> getCitiesBetweenNumberInhabitants(int id, int min, int max) {
+        TypedQuery<City> query = entityManager.createQuery(
+                "SELECT c FROM Department d JOIN d.cities c WHERE (d.id = :id) AND (c.numberInhabitants BETWEEN :min AND :max) ORDER BY c.numberInhabitants DESC",
+                City.class);
+        query.setParameter("id", id);
+        query.setParameter("min", min);
+        query.setParameter("max", max);
+
+        return query.getResultList();
     }
 
     @Transactional
