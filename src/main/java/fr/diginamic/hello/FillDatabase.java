@@ -67,6 +67,7 @@ public class FillDatabase implements
 
                 City city = new City();
                 city.setName(splittedLine[6]);
+                city.setCode(splittedLine[5]);
                 city.setNumberInhabitants(Integer.parseInt(splittedLine[9].replaceAll(" ", "")));
                 city.setDepartment(department);
                 cities.add(city);

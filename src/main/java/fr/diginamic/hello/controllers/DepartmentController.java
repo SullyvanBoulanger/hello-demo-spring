@@ -3,7 +3,9 @@ package fr.diginamic.hello.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.diginamic.hello.dtos.DepartmentDtoForFront;
 import fr.diginamic.hello.dtos.DepartmentDtoFromFront;
+import fr.diginamic.hello.dtos.mappers.DepartmentDtoMapper;
 import fr.diginamic.hello.entities.Department;
 import fr.diginamic.hello.services.DepartmentService;
 
@@ -20,6 +22,9 @@ public class DepartmentController extends SuperController<String, Department, De
     @Autowired
     private DepartmentService departmentService;
 
+    @Autowired
+    private DepartmentDtoMapper departmentDtoMapper;
+
     public DepartmentController() {
         super("Le département n'existe pas");
     }
@@ -29,4 +34,10 @@ public class DepartmentController extends SuperController<String, Department, De
 
         return ResponseEntity.ok(departmentService.getBigCities(id, limit));
     }
+
+    @GetMapping("/test/{code}")
+    public DepartmentDtoForFront getDepartmentDto(@PathVariable String code) {
+        return departmentDtoMapper.toDto(departmentService.getById(code));
+    }
+    
 }

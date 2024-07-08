@@ -3,7 +3,9 @@ package fr.diginamic.hello.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.diginamic.hello.dtos.CityDtoForFront;
 import fr.diginamic.hello.dtos.CityDtoFromFront;
+import fr.diginamic.hello.dtos.mappers.CityDtoMapper;
 import fr.diginamic.hello.entities.City;
 import fr.diginamic.hello.repositories.CityRepository;
 
@@ -21,9 +23,18 @@ public class CityController extends SuperController<Integer, City, CityDtoFromFr
     @Autowired
     private CityRepository cityRepository;
 
+    @Autowired
+    private CityDtoMapper cityDtoMapper;
+
     public CityController() {
         super("La ville n'existe pas");
     }
+
+    @GetMapping("/test/{id}")
+    public CityDtoForFront geCityDto(@PathVariable int id) {
+        return cityDtoMapper.toDto(cityRepository.findById(id).orElse(null));
+    }
+    
 
     @GetMapping("/nom")
     public ResponseEntity<?> getCitiesStartingWith(@RequestParam String name) {
