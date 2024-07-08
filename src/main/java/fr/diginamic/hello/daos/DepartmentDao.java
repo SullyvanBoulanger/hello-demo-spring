@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.diginamic.hello.dtos.DepartmentDto;
+import fr.diginamic.hello.dtos.DepartmentDtoFromFront;
 import fr.diginamic.hello.entities.City;
 import fr.diginamic.hello.entities.Department;
 import jakarta.persistence.TypedQuery;
 
 @Repository
-public class DepartmentDao extends SuperDao<String, Department, DepartmentDto> {
+public class DepartmentDao extends SuperDao<String, Department, DepartmentDtoFromFront> {
 
     @Autowired
     private CityDao cityDao;
@@ -44,7 +44,7 @@ public class DepartmentDao extends SuperDao<String, Department, DepartmentDto> {
 
     @Override
     @Transactional
-    public void insert(DepartmentDto departmentDto) {
+    public void insert(DepartmentDtoFromFront departmentDto) {
         Department department = new Department();
         department.setCode(departmentDto.getCode());
         department.setName(departmentDto.getName());
@@ -55,7 +55,7 @@ public class DepartmentDao extends SuperDao<String, Department, DepartmentDto> {
 
     @Override
     @Transactional
-    public boolean update(String code, DepartmentDto departmentDto) {
+    public boolean update(String code, DepartmentDtoFromFront departmentDto) {
         Department department = findById(code);
 
         if (department == null)

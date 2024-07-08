@@ -3,7 +3,7 @@ package fr.diginamic.hello.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.diginamic.hello.dtos.CityDto;
+import fr.diginamic.hello.dtos.CityDtoFromFront;
 import fr.diginamic.hello.entities.City;
 import fr.diginamic.hello.repositories.CityRepository;
 
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/villes")
-public class CityController extends SuperController<Integer, City, CityDto> {
+public class CityController extends SuperController<Integer, City, CityDtoFromFront> {
     @Autowired
     private CityRepository cityRepository;
 

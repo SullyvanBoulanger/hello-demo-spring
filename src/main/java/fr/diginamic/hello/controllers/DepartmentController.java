@@ -3,7 +3,7 @@ package fr.diginamic.hello.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.diginamic.hello.dtos.DepartmentDto;
+import fr.diginamic.hello.dtos.DepartmentDtoFromFront;
 import fr.diginamic.hello.entities.Department;
 import fr.diginamic.hello.services.DepartmentService;
 
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/departements")
-public class DepartmentController extends SuperController<String, Department, DepartmentDto> {
+public class DepartmentController extends SuperController<String, Department, DepartmentDtoFromFront> {
 
     @Autowired
     private DepartmentService departmentService;

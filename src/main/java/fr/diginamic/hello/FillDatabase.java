@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -28,6 +29,9 @@ public class FillDatabase implements
     @Autowired
     private DepartmentService departmentService;
 
+    @Value("${database.initialization}")
+    private boolean isDatabaseInit;
+
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(FillDatabase.class);
         application.setWebApplicationType(WebApplicationType.NONE);
@@ -36,6 +40,12 @@ public class FillDatabase implements
 
     @Override
     public void run(String... args) throws Exception {
+
+        if (isDatabaseInit) {
+            System.out.println("Database initialised");
+            return;
+        }
+
         Path path = Paths.get("./src/main/resources/recensement.csv");
 
         ArrayList<City> cities = new ArrayList<>();
@@ -66,8 +76,9 @@ public class FillDatabase implements
                     .sorted(Comparator.comparingLong(City::getNumberInhabitants).reversed())
                     .limit(1000)
                     .toList());
-            
-            sortedCities.stream().limit(10).forEach(city -> System.out.println(city.getName() + city.getNumberInhabitants()));
+
+            sortedCities.stream().limit(10)
+                    .forEach(city -> System.out.println(city.getName() + city.getNumberInhabitants()));
 
             sortedCities.forEach(cityService::insertFromEntity);
         } catch (Exception e) {

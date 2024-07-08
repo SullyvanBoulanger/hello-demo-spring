@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CityDto {
+public class CityDtoFromFront {
     @NotNull
     @Size(min = 2)
     private String name;

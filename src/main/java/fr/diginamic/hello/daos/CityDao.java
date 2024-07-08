@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.diginamic.hello.dtos.CityDto;
+import fr.diginamic.hello.dtos.CityDtoFromFront;
 import fr.diginamic.hello.entities.City;
 import fr.diginamic.hello.entities.Department;
 import jakarta.persistence.TypedQuery;
 
 @Repository
-public class CityDao extends SuperDao<Integer, City, CityDto> {
+public class CityDao extends SuperDao<Integer, City, CityDtoFromFront> {
 
     public List<City> findAll() {
         TypedQuery<City> query = entityManager.createQuery("SELECT c FROM City c", City.class);
@@ -36,7 +36,7 @@ public class CityDao extends SuperDao<Integer, City, CityDto> {
 
     @Override
     @Transactional
-    public void insert(CityDto dto) {
+    public void insert(CityDtoFromFront dto) {
         City entityCity = new City();
         entityCity.setName(dto.getName());
         entityCity.setNumberInhabitants(dto.getNumberInhabitants());
@@ -47,7 +47,7 @@ public class CityDao extends SuperDao<Integer, City, CityDto> {
 
     @Override
     @Transactional
-    public boolean update(Integer id, CityDto dto) {
+    public boolean update(Integer id, CityDtoFromFront dto) {
         City city = findById(id);
 
         if (city == null)

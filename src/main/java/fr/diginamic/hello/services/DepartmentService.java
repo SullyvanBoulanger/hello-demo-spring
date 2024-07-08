@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fr.diginamic.hello.daos.DepartmentDao;
-import fr.diginamic.hello.dtos.DepartmentDto;
+import fr.diginamic.hello.dtos.DepartmentDtoFromFront;
 import fr.diginamic.hello.entities.City;
 import fr.diginamic.hello.entities.Department;
 
 @Service
-public class DepartmentService extends SuperService<String, Department, DepartmentDto> {
+public class DepartmentService extends SuperService<String, Department, DepartmentDtoFromFront> {
 
     @Autowired
     private DepartmentDao departmentDao;
