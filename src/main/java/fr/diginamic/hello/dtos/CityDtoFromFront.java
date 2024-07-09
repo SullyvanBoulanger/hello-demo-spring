@@ -17,8 +17,9 @@ public class CityDtoFromFront {
     @Size(min = 2)
     private String name;
 
-    @Min(1)
+    @Min(10)
     private long numberInhabitants;
 
-    private int departmentId;
+    @Size(min = 2, max = 2)
+    private String departmentId;
 }
