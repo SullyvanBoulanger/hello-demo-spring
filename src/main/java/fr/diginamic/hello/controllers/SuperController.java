@@ -21,6 +21,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.diginamic.hello.exceptions.BadRequestException;
 import fr.diginamic.hello.services.SuperService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
 public abstract class SuperController<S, T, U> {
@@ -37,6 +41,11 @@ public abstract class SuperController<S, T, U> {
         this.nonExistentMessage = missingMessage;
     }
 
+    @Operation(summary = "Récupération")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retourne la liste ", content = {
+                    @Content(mediaType = "application/json") }),
+    })
     @GetMapping()
     public List<T> getAll(@RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -49,6 +58,13 @@ public abstract class SuperController<S, T, U> {
         return service.getById(id);
     }
 
+    @Operation(summary = "Création")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retourne la liste incluant le dernier élément créé", content = {
+                    @Content(mediaType = "application/json") }),
+                    // I didn't find a way to use U generic type
+                    // @Content(mediaType = "application/json", schema = @Schema(implementation = U.class)) }),
+            @ApiResponse(responseCode = "400", description = "Si une règle métier n'est pas respectée.", content = @Content) })
     @PostMapping()
     public ResponseEntity<?> post(@Valid @RequestBody U dto, BindingResult result) throws BadRequestException {
 
@@ -57,6 +73,13 @@ public abstract class SuperController<S, T, U> {
         return ResponseEntity.ok(service.insertFromDto(dto));
     }
 
+    @Operation(summary = "Modification")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retourne la liste incluant le dernier élément modifié", content = {
+                    @Content(mediaType = "application/json") }),
+                    // I didn't find a way to use U generic type
+                    // @Content(mediaType = "application/json", schema = @Schema(implementation = U.class)) }),
+            @ApiResponse(responseCode = "400", description = "Si une règle métier n'est pas respectée.", content = @Content) })
     @PutMapping("/{id}")
     public ResponseEntity<?> updateById(@PathVariable S id, @Valid @RequestBody U dto,
             BindingResult result) throws BadRequestException {
@@ -70,6 +93,13 @@ public abstract class SuperController<S, T, U> {
         return ResponseEntity.ok(entities);
     }
 
+    @Operation(summary = "Suppression")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retourne la liste excluant l'élément passé", content = {
+                    @Content(mediaType = "application/json") }),
+                    // I didn't find a way to use U generic type
+                    // @Content(mediaType = "application/json", schema = @Schema(implementation = U.class)) }),
+            @ApiResponse(responseCode = "400", description = "Si une règle métier n'est pas respectée.", content = @Content) })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable S id) {
         List<T> entities = service.delete(id);

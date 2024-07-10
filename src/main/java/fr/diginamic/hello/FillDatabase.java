@@ -77,11 +77,11 @@ public class FillDatabase implements
                     .sorted(Comparator.comparingLong(City::getNumberInhabitants).reversed())
                     .limit(1000)
                     .toList());
-
-            sortedCities.stream().limit(10)
-                    .forEach(city -> System.out.println(city.getName() + city.getNumberInhabitants()));
-
+                    
             sortedCities.forEach(cityService::insertFromEntity);
+            
+            System.out.println("Database filled");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
